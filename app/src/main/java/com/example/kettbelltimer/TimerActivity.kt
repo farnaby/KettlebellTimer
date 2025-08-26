@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.kettbelltimer.ui.theme.KettbellTimerTheme
 
 class TimerActivity : ComponentActivity() {
@@ -17,10 +19,21 @@ class TimerActivity : ComponentActivity() {
     private val totalRounds: Int by lazy {
         intent.getIntExtra(EXTRA_TOTAL_ROUNDS, 0)
     }
+    
+    private lateinit var viewModel: TimerViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
+        // Initialize ViewModel
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return TimerViewModel(totalRounds) as T
+            }
+        })[TimerViewModel::class.java]
+        
         setContent {
             KettbellTimerTheme {
                 Surface(
@@ -28,7 +41,7 @@ class TimerActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     TimerScreen(
-                        totalRounds = totalRounds,
+                        viewModel = viewModel,
                         onStopClicked = {
                             finish() // Go back to the previous activity (MainActivity)
                         }

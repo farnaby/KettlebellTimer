@@ -3,6 +3,8 @@ package com.example.kettbelltimer
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -12,11 +14,18 @@ import androidx.compose.ui.unit.sp
 import com.example.kettbelltimer.ui.theme.KettbellTimerTheme
 import com.example.kettbelltimer.ui.theme.SportyGreen
 import com.example.kettbelltimer.ui.theme.OnSportyGreen
+import com.example.kettbelltimer.ui.theme.PauseYellow
+import com.example.kettbelltimer.ui.theme.OnPauseYellow
 // It's good practice to ensure this import is present if R is not automatically resolved.
 // import com.example.kettbelltimer.R
 
 @Composable
-fun TimerScreen(totalRounds: Int, onStopClicked: () -> Unit) {
+fun TimerScreen(viewModel: TimerViewModel, onStopClicked: () -> Unit) {
+    val timeDisplay by viewModel.timeDisplay.collectAsState()
+    val currentRoundDisplay by viewModel.currentRoundDisplay.collectAsState()
+    val currentExerciseDisplay by viewModel.currentExerciseDisplay.collectAsState()
+    val totalTimeDisplay by viewModel.totalTimeDisplay.collectAsState()
+    val isPlaying by viewModel.isPlaying.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,9 +41,9 @@ fun TimerScreen(totalRounds: Int, onStopClicked: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Round: 1 / $totalRounds", style = MaterialTheme.typography.titleMedium)
-            Text("Exercise: 1 / 8", style = MaterialTheme.typography.titleMedium)
-            Text("Total: 00:00", style = MaterialTheme.typography.titleMedium)
+            Text(currentRoundDisplay, style = MaterialTheme.typography.titleMedium)
+            Text(currentExerciseDisplay, style = MaterialTheme.typography.titleMedium)
+            Text(totalTimeDisplay, style = MaterialTheme.typography.titleMedium)
         }
 
         // Main Section: Large countdown timer
@@ -45,7 +54,7 @@ fun TimerScreen(totalRounds: Int, onStopClicked: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "30", // Placeholder for countdown
+                text = timeDisplay,
                 fontSize = 120.sp, // Very large text
                 style = MaterialTheme.typography.displayLarge,
                 color = SportyGreen
@@ -61,13 +70,17 @@ fun TimerScreen(totalRounds: Int, onStopClicked: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-                onClick = { /* TODO: Implement Play/Pause logic */ },
-                colors = ButtonDefaults.buttonColors(containerColor = SportyGreen)
+                onClick = { viewModel.togglePlayPause() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isPlaying) PauseYellow else SportyGreen
+                )
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.play_arrow_24px),
-                    contentDescription = "Play/Pause",
-                    tint = OnSportyGreen,
+                    painter = painterResource(
+                        id = if (isPlaying) R.drawable.pause_24px else R.drawable.play_arrow_24px
+                    ),
+                    contentDescription = if (isPlaying) "Pause" else "Play",
+                    tint = if (isPlaying) OnPauseYellow else OnSportyGreen,
                     modifier = Modifier.size(48.dp)
                 )
             }
@@ -90,6 +103,7 @@ fun TimerScreen(totalRounds: Int, onStopClicked: () -> Unit) {
 @Composable
 fun PreviewTimerScreen() {
     KettbellTimerTheme {
-        TimerScreen(totalRounds = 3, onStopClicked = {})
+        // Preview with mock data since we can't easily create a real ViewModel here
+        Text("Preview not implemented")
     }
 }

@@ -17,6 +17,8 @@ val SportyGreen = Color(0xFF4CAF50) // A vibrant green
 val LightSportyGreen = Color(0xFFC8E6C9) // A lighter green (updated)
 val OnSportyGreen = Color.White // For text/icons on SportyGreen
 val OnLightSportyGreen = Color.Black // For text/icons on LightSportyGreen
+val PauseYellow = Color(0xFFFFEB3B) // Yellow for pause button
+val OnPauseYellow = Color.Black // For text/icons on PauseYellow
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

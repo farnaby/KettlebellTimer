@@ -1,13 +1,16 @@
 package com.example.kettbelltimer
 
+import android.content.Context
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration.Companion.seconds
+import com.example.kettbelltimer.AudioManager
 
-class TimerViewModel(private val totalRounds: Int) : ViewModel() {
+class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel() {
+    private lateinit var audioManager: AudioManager
 
     // --- Workout State ---
     private var currentRound = 1
@@ -43,8 +46,10 @@ class TimerViewModel(private val totalRounds: Int) : ViewModel() {
     // --- CountDownTimer instances ---
     private var initialCountdownTimer: CountDownTimer? = null
     private var mainTimer: CountDownTimer? = null
+    private var countdownTimer: CountDownTimer? = null
 
     init {
+        audioManager = KBTimerApp.getAudioManager(context)
         startInitialCountdown()
     }
 
@@ -60,6 +65,7 @@ class TimerViewModel(private val totalRounds: Int) : ViewModel() {
                 val secondsLeft = (millisUntilFinished / 1000).toInt() + 1
                 _timeDisplay.value = secondsLeft.toString()
                 currentPhaseTimeLeft = secondsLeft
+                audioManager.playCountdownBeep()
                 updateTotalTimeDisplay()
             }
 
@@ -78,32 +84,47 @@ class TimerViewModel(private val totalRounds: Int) : ViewModel() {
     }
 
     fun togglePlayPause() {
+        // Play button tap sound
+        audioManager.playButtonTapSound()
+        
         _isPlaying.value = !_isPlaying.value
         
         if (_isPlaying.value) {
             when (currentPhase) {
                 WorkoutPhase.INITIAL_COUNTDOWN -> startInitialCountdown()
-                else -> startMainTimer()
+                else -> startMainTimer(currentPhaseTimeLeft)
             }
         } else {
             cancelTimers()
         }
     }
 
-    private fun startMainTimer() {
+    private fun startMainTimer(resumeAtTime : Int? = null) {
         cancelTimers()
         _isPlaying.value = true
-        
+
         // Calculate the time for the current phase
-        val timeForCurrentPhase = when (currentPhase) {
+        val timeForCurrentPhase = resumeAtTime ?: when (currentPhase) {
             WorkoutPhase.EXERCISE -> EXERCISE_DURATION_SECONDS
             WorkoutPhase.REST -> REST_DURATION_SECONDS
             else -> 0
+        }
+
+        if(resumeAtTime == null) {
+            when (currentPhase) {
+                WorkoutPhase.EXERCISE -> audioManager.playExerciseStartSound()
+                WorkoutPhase.REST -> audioManager.playRestStartSound()
+                else -> { /* No sound for other phases or handle as needed */
+                }
+            }
         }
         
         mainTimer = object : CountDownTimer((timeForCurrentPhase * 1000).toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsLeft = (millisUntilFinished / 1000).toInt() + 1
+                if(secondsLeft <= 3) {
+                    audioManager.playCountdownBeep()
+                }
                 currentPhaseTimeLeft = secondsLeft
                 _timeDisplay.value = formatTime(currentPhaseTimeLeft)
                 totalSecondsElapsed++
@@ -111,49 +132,54 @@ class TimerViewModel(private val totalRounds: Int) : ViewModel() {
             }
 
             override fun onFinish() {
-                when (currentPhase) {
-                    WorkoutPhase.EXERCISE -> {
-                        // Move to next exercise or rest
-                        if (currentExercise < EXERCISES_PER_ROUND) {
-                            // Next exercise in same round
-                            currentExercise++
-                            currentPhaseTimeLeft = EXERCISE_DURATION_SECONDS
-                            _currentExerciseDisplay.value = "Exercise: $currentExercise / $EXERCISES_PER_ROUND"
-                            startMainTimer() // Restart timer for next exercise
-                        } else {
-                            // End of round - rest time (except after final round)
-                            if (currentRound < totalRounds) {
-                                currentPhase = WorkoutPhase.REST
-                                currentPhaseTimeLeft = REST_DURATION_SECONDS
-                                _currentExerciseDisplay.value = "Rest"
-                                startMainTimer() // Restart timer for rest period
-                            } else {
-                                // Workout complete
-                                _currentExerciseDisplay.value = "Workout Complete!"
-                                _isPlaying.value = false
-                            }
-                        }
-                        _timeDisplay.value = formatTime(currentPhaseTimeLeft)
-                    }
-                    
-                    WorkoutPhase.REST -> {
-                        // Start next round
-                        currentRound++
-                        currentExercise = 1
-                        currentPhase = WorkoutPhase.EXERCISE
-                        currentPhaseTimeLeft = EXERCISE_DURATION_SECONDS
-                        _currentExerciseDisplay.value = "Exercise: $currentExercise / $EXERCISES_PER_ROUND"
-                        _currentRoundDisplay.value = "Round: $currentRound / $totalRounds"
-                        _timeDisplay.value = formatTime(currentPhaseTimeLeft)
-                        startMainTimer() // Restart timer for next round
-                    }
-                    
-                    else -> {
-                        // This shouldn't happen
-                    }
-                }
+                finishCurrentExcerciseOrRest()
             }
         }.start()
+    }
+
+    private fun finishCurrentExcerciseOrRest() {
+        when (currentPhase) {
+            WorkoutPhase.EXERCISE -> {
+                // Move to next exercise or rest
+                if (currentExercise < EXERCISES_PER_ROUND) {
+                    // Next exercise in same round
+                    currentExercise++
+                    currentPhaseTimeLeft = EXERCISE_DURATION_SECONDS
+                    _currentExerciseDisplay.value = "Exercise: $currentExercise / $EXERCISES_PER_ROUND"
+                    startMainTimer() // Restart timer for next exercise
+                } else if (currentRound < totalRounds) {
+                    currentPhase = WorkoutPhase.REST
+                    currentPhaseTimeLeft = REST_DURATION_SECONDS
+                    _currentExerciseDisplay.value = "Rest"
+                    startMainTimer()
+                    // Play sound for rest start
+                } else {
+                    // Workout complete
+                    _currentExerciseDisplay.value = "Workout Complete!"
+                    _isPlaying.value = false
+                    currentPhaseTimeLeft = 0
+                    // Play sound for workout completion
+                    audioManager.playWorkoutCompleteSound()
+                }
+                _timeDisplay.value = formatTime(currentPhaseTimeLeft)
+            }
+
+            WorkoutPhase.REST -> {
+                // Start next round
+                currentRound++
+                currentExercise = 1
+                currentPhase = WorkoutPhase.EXERCISE
+                currentPhaseTimeLeft = EXERCISE_DURATION_SECONDS
+                _currentExerciseDisplay.value = "Exercise: $currentExercise / $EXERCISES_PER_ROUND"
+                _currentRoundDisplay.value = "Round: $currentRound / $totalRounds"
+                _timeDisplay.value = formatTime(currentPhaseTimeLeft)
+                startMainTimer() // Restart timer for next round
+            }
+
+            else -> {
+                // This shouldn't happen
+            }
+        }
     }
 
     private fun cancelTimers() {
@@ -163,7 +189,7 @@ class TimerViewModel(private val totalRounds: Int) : ViewModel() {
 
     private fun updateTotalTimeDisplay() {
         if(totalSecondsElapsed < 0) {
-            _totalTimeDisplay.value = "Total: --:--";
+            _totalTimeDisplay.value = "Total: --:--"
         } else {
             val minutes = totalSecondsElapsed / 60
             val seconds = totalSecondsElapsed % 60
@@ -175,26 +201,10 @@ class TimerViewModel(private val totalRounds: Int) : ViewModel() {
         return if (seconds < 0) "0" else seconds.toString()
     }
 
-    fun resetTimer() {
-        cancelTimers()
-        currentRound = 1
-        currentExercise = 1
-        totalSecondsElapsed = -1
-        currentPhaseTimeLeft = INITIAL_COUNTDOWN_SECONDS
-        currentPhase = WorkoutPhase.INITIAL_COUNTDOWN
-        
-        _timeDisplay.value = INITIAL_COUNTDOWN_SECONDS.toString()
-        _currentRoundDisplay.value = "Round: $currentRound / $totalRounds"
-        _currentExerciseDisplay.value = "Get Ready!"
-        _totalTimeDisplay.value = "Total: 00:00"
-        _isPlaying.value = true
-        
-        startInitialCountdown()
-    }
-
     override fun onCleared() {
         super.onCleared()
         cancelTimers()
+        countdownTimer?.cancel()
     }
 
     private enum class WorkoutPhase {

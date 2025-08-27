@@ -21,16 +21,19 @@ class TimerActivity : ComponentActivity() {
     }
     
     private lateinit var viewModel: TimerViewModel
+    private lateinit var audioManager: AudioManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
+        audioManager = KBTimerApp.getAudioManager(this)
+
         // Initialize ViewModel
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return TimerViewModel(totalRounds) as T
+                return TimerViewModel(totalRounds, this@TimerActivity) as T
             }
         })[TimerViewModel::class.java]
         
@@ -43,6 +46,7 @@ class TimerActivity : ComponentActivity() {
                     TimerScreen(
                         viewModel = viewModel,
                         onStopClicked = {
+                            audioManager.playButtonTapSound()
                             finish() // Go back to the previous activity (MainActivity)
                         }
                     )

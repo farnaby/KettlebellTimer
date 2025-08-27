@@ -14,6 +14,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val audioManager = KBTimerApp.getAudioManager(this)
+
         setContent {
             KettbellTimerTheme {
                 Surface(
@@ -22,6 +25,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     TimerSetupScreen(onStartClicked = { rounds ->
                         val intent = TimerActivity.newIntent(this, rounds)
+                        audioManager.playButtonTapSound()
                         startActivity(intent)
                     })
                 }

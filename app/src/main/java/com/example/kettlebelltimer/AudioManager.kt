@@ -1,5 +1,5 @@
 // AudioManager.kt
-package com.example.kettbelltimer
+package com.example.kettlebelltimer
 
 import android.content.Context
 import android.media.AudioAttributes

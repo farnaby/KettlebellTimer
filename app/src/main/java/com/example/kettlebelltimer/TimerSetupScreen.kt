@@ -1,4 +1,4 @@
-package com.example.kettbelltimer
+package com.example.kettlebelltimer
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 // Removed import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.kettbelltimer.ui.theme.* // Added import for theme colors
+import com.example.kettlebelltimer.ui.theme.* // Added import for theme colors
 
 @Composable
 fun TimerSetupScreen(onStartClicked: (rounds: Int) -> Unit) {
@@ -67,7 +67,7 @@ fun TimerSetupScreen(onStartClicked: (rounds: Int) -> Unit) {
 @Composable
 fun PreviewTimerSetupScreen() {
     // Wrap preview in the theme to see colors correctly
-    KettbellTimerTheme {
+    KettlebellTimerTheme {
         TimerSetupScreen(onStartClicked = {})
     }
 }

@@ -1,4 +1,4 @@
-package com.example.kettbelltimer
+package com.example.kettlebelltimer
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,13 +11,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kettbelltimer.ui.theme.KettbellTimerTheme
-import com.example.kettbelltimer.ui.theme.SportyGreen
-import com.example.kettbelltimer.ui.theme.OnSportyGreen
-import com.example.kettbelltimer.ui.theme.PauseYellow
-import com.example.kettbelltimer.ui.theme.OnPauseYellow
+import com.example.kettlebelltimer.ui.theme.KettlebellTimerTheme
+import com.example.kettlebelltimer.ui.theme.SportyGreen
+import com.example.kettlebelltimer.ui.theme.OnSportyGreen
+import com.example.kettlebelltimer.ui.theme.PauseYellow
+import com.example.kettlebelltimer.ui.theme.OnPauseYellow
 // It's good practice to ensure this import is present if R is not automatically resolved.
-// import com.example.kettbelltimer.R
+// import com.example.kettlebelltimer.R
 
 @Composable
 fun TimerScreen(viewModel: TimerViewModel, onStopClicked: () -> Unit) {
@@ -102,7 +102,7 @@ fun TimerScreen(viewModel: TimerViewModel, onStopClicked: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewTimerScreen() {
-    KettbellTimerTheme {
+    KettlebellTimerTheme {
         // Preview with mock data since we can't easily create a real ViewModel here
         Text("Preview not implemented")
     }

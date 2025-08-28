@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.kettbelltimer"
+    namespace = "com.example.kettlebelltimer"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.kettbelltimer"
+        applicationId = "com.example.kettlebelltimer"
         minSdk = 27
         targetSdk = 36
         versionCode = 1

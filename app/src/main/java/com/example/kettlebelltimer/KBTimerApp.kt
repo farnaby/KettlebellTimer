@@ -1,4 +1,4 @@
-package com.example.kettbelltimer
+package com.example.kettlebelltimer
 
 import android.app.Application
 import android.content.Context

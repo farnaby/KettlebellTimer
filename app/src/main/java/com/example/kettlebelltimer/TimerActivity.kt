@@ -1,4 +1,4 @@
-package com.example.kettbelltimer
+package com.example.kettlebelltimer
 
 import android.content.Context
 import android.content.Intent
@@ -13,7 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.kettbelltimer.ui.theme.KettbellTimerTheme
+import com.example.kettlebelltimer.ui.theme.KettlebellTimerTheme
 
 class TimerActivity : ComponentActivity() {
 
@@ -41,7 +41,7 @@ class TimerActivity : ComponentActivity() {
         })[TimerViewModel::class.java]
         
         setContent {
-            KettbellTimerTheme {
+            KettlebellTimerTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -64,7 +64,7 @@ class TimerActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val EXTRA_TOTAL_ROUNDS = "com.example.kettbelltimer.EXTRA_TOTAL_ROUNDS"
+        private const val EXTRA_TOTAL_ROUNDS = "com.example.kettlebelltimer.EXTRA_TOTAL_ROUNDS"
 
         fun newIntent(context: Context, totalRounds: Int): Intent {
             return Intent(context, TimerActivity::class.java).apply {

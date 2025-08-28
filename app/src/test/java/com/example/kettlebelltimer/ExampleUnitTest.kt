@@ -1,4 +1,4 @@
-package com.example.kettbelltimer
+package com.example.kettlebelltimer
 
 import org.junit.Test
 

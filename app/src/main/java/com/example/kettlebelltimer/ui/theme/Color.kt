@@ -1,4 +1,4 @@
-package com.example.kettbelltimer.ui.theme
+package com.example.kettlebelltimer.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

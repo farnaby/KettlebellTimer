@@ -1,4 +1,4 @@
-package com.example.kettbelltimer
+package com.example.kettlebelltimer
 
 import android.content.Context
 import android.os.CountDownTimer
@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration.Companion.seconds
-import com.example.kettbelltimer.AudioManager
+import com.example.kettlebelltimer.AudioManager
 
 class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel() {
     private lateinit var audioManager: AudioManager

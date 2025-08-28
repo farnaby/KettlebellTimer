@@ -19,6 +19,8 @@ val OnSportyGreen = Color.White // For text/icons on SportyGreen
 val OnLightSportyGreen = Color.Black // For text/icons on LightSportyGreen
 val PauseYellow = Color(0xFFFFEB3B) // Yellow for pause button
 val OnPauseYellow = Color.Black // For text/icons on PauseYellow
+val RestBlue = Color(0xFF2196F3) // Blue for rest phases
+val RestBlueDark = Color(0xFF1976D2) // Darker blue for rest rings
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

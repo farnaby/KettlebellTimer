@@ -24,7 +24,6 @@ import com.example.kettlebelltimer.ui.theme.SportyGreen
 import com.example.kettlebelltimer.ui.theme.OnSportyGreen
 import com.example.kettlebelltimer.ui.theme.PauseYellow
 import com.example.kettlebelltimer.ui.theme.OnPauseYellow
-import com.example.kettlebelltimer.ui.theme.LightSportyGreen
 import com.example.kettlebelltimer.ui.theme.RestBlue
 import com.example.kettlebelltimer.ui.theme.RestBlueDark
 import androidx.compose.animation.core.animateFloatAsState
@@ -145,7 +144,6 @@ fun CircularProgressTimer(
 
 @Composable
 fun TimerScreen(viewModel: TimerViewModel, onStopClicked: () -> Unit) {
-    val timeDisplay by viewModel.timeDisplay.collectAsState()
     val currentRoundDisplay by viewModel.currentRoundDisplay.collectAsState()
     val currentExerciseDisplay by viewModel.currentExerciseDisplay.collectAsState()
     val totalTimeDisplay by viewModel.totalTimeDisplay.collectAsState()

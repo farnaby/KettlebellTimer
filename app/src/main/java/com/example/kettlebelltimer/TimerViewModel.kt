@@ -25,9 +25,6 @@ class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel
     private val _currentExerciseDisplay = MutableStateFlow("Get Ready!")
     val currentExerciseDisplay: StateFlow<String> = _currentExerciseDisplay
 
-    private val _totalTimeDisplay = MutableStateFlow("Total: 00:00")
-    val totalTimeDisplay: StateFlow<String> = _totalTimeDisplay
-
     private val _isPlaying = MutableStateFlow(true)
     val isPlaying: StateFlow<Boolean> = _isPlaying
 
@@ -71,7 +68,6 @@ class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel
                 _timeDisplay.value = secondsLeft.toString()
                 currentPhaseTimeLeft = secondsLeft
                 audioManager.playCountdownBeep()
-                updateTotalTimeDisplay()
             }
 
             override fun onFinish() {
@@ -82,7 +78,6 @@ class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel
                 _timeDisplay.value = formatTime(EXERCISE_DURATION_SECONDS)
                 _currentExerciseDisplay.value = "Exercise: $currentExercise / $EXERCISES_PER_ROUND"
                 _currentRoundDisplay.value = "Round: $currentRound / $totalRounds"
-                updateProgressValues() // Update progress for new phase
                 // Start main timer immediately after initial countdown
                 startMainTimer()
             }
@@ -134,16 +129,16 @@ class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel
                 currentPhaseTimeLeft = secondsLeft
                 _timeDisplay.value = formatTime(currentPhaseTimeLeft)
                 totalSecondsElapsed++
-                updateTotalTimeDisplay()
+                updateProgressValues()
             }
 
             override fun onFinish() {
-                finishCurrentExcerciseOrRest()
+                finishCurrentExerciseOrRest()
             }
         }.start()
     }
 
-    private fun finishCurrentExcerciseOrRest() {
+    private fun finishCurrentExerciseOrRest() {
         when (_currentPhase.value) {
             WorkoutPhase.EXERCISE -> {
                 // Move to next exercise or rest
@@ -164,6 +159,7 @@ class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel
                     _currentExerciseDisplay.value = "Workout Complete!"
                     _isPlaying.value = false
                     currentPhaseTimeLeft = 0
+                    totalSecondsElapsed = calculateTotalWorkoutDuration()
                     // Play sound for workout completion
                     audioManager.playWorkoutCompleteSound()
                 }
@@ -195,18 +191,13 @@ class TimerViewModel(private val totalRounds: Int, context: Context) : ViewModel
         mainTimer?.cancel()
     }
 
-    private fun updateTotalTimeDisplay() {
-        if(totalSecondsElapsed < 0) {
-            _totalTimeDisplay.value = "Total: --:--"
-        } else {
-            val minutes = totalSecondsElapsed / 60
-            val seconds = totalSecondsElapsed % 60
-            _totalTimeDisplay.value = String.format("Total: %02d:%02d", minutes, seconds)
-        }
-        updateProgressValues()
-    }
-
     private fun updateProgressValues() {
+        if(_currentPhase.value == WorkoutPhase.INITIAL_COUNTDOWN) {
+            _currentPhaseProgress.value = 0f
+            _totalWorkoutProgress.value = 0f
+            return
+        }
+
         // Update current phase progress
         val phaseDuration = when (_currentPhase.value) {
             WorkoutPhase.INITIAL_COUNTDOWN -> INITIAL_COUNTDOWN_SECONDS.toFloat()

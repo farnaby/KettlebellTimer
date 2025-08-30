@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -146,7 +147,6 @@ fun CircularProgressTimer(
 fun TimerScreen(viewModel: TimerViewModel, onStopClicked: () -> Unit) {
     val currentRoundDisplay by viewModel.currentRoundDisplay.collectAsState()
     val currentExerciseDisplay by viewModel.currentExerciseDisplay.collectAsState()
-    val totalTimeDisplay by viewModel.totalTimeDisplay.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     Column(
         modifier = Modifier
@@ -163,9 +163,8 @@ fun TimerScreen(viewModel: TimerViewModel, onStopClicked: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(currentRoundDisplay, style = MaterialTheme.typography.titleMedium)
-            Text(currentExerciseDisplay, style = MaterialTheme.typography.titleMedium)
-            Text(totalTimeDisplay, style = MaterialTheme.typography.titleMedium)
+            Text(currentRoundDisplay, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+            Text(currentExerciseDisplay, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
         }
 
         // Main Section: Circular progress timer

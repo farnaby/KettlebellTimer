@@ -23,9 +23,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TimerSetupScreen(onStartClicked = { rounds ->
+                    TimerSetupScreen(audioManager, onStartClicked = { rounds ->
                         val intent = TimerActivity.newIntent(this, rounds)
-                        audioManager.playButtonTapSound()
                         startActivity(intent)
                     })
                 }

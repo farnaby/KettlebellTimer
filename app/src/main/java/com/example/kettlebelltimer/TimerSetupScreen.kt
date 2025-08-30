@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.kettlebelltimer.ui.theme.* // Added import for theme colors
 
 @Composable
-fun TimerSetupScreen(onStartClicked: (rounds: Int) -> Unit) {
+fun TimerSetupScreen(audioManager: AudioManager?, onStartClicked: (rounds: Int) -> Unit) {
     var selectedRounds by remember { mutableIntStateOf(3) }
 
     Column(
@@ -35,7 +35,10 @@ fun TimerSetupScreen(onStartClicked: (rounds: Int) -> Unit) {
         ) {
             (1..3).forEach { roundCount ->
                 Button(
-                    onClick = { selectedRounds = roundCount },
+                    onClick = {
+                        audioManager?.playButtonTapSound()
+                        selectedRounds = roundCount
+                              },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedRounds == roundCount) SportyGreen else LightSportyGreen,
                         contentColor = if (selectedRounds == roundCount) OnSportyGreen else OnLightSportyGreen
@@ -68,6 +71,6 @@ fun TimerSetupScreen(onStartClicked: (rounds: Int) -> Unit) {
 fun PreviewTimerSetupScreen() {
     // Wrap preview in the theme to see colors correctly
     KettlebellTimerTheme {
-        TimerSetupScreen(onStartClicked = {})
+        TimerSetupScreen(null, onStartClicked = {})
     }
 }

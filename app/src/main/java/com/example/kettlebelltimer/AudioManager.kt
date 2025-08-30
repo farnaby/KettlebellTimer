@@ -51,17 +51,11 @@ class AudioManager(context: Context) {
     fun playRestStartSound() = playSound(restStartSoundId)
     fun playWorkoutCompleteSound() = playSound(workoutCompleteSoundId)
     fun playCountdownBeep() = playSound(countdownBeepSoundId)
-    fun playButtonTapSound() = playSound(buttonTapSoundId)
+    fun playButtonTapSound() = playSound(buttonTapSoundId, 0.7f)
 
-    private fun playSound(soundId: Int) {
+    private fun playSound(soundId: Int, volume: Float = 1.0f) {
         if (soundId != -1) {
-            soundPool?.play(soundId, 1.0f, 1.0f, 1, 0, 1.0f)
-        }
-    }
-
-    fun playCountdownSound(seconds: Int) {
-        if (seconds in 1..3) {
-            playCountdownBeep()
+            soundPool?.play(soundId, volume, volume, 1, 0, 1.0f)
         }
     }
 

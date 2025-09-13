@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 // Removed import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kettlebelltimer.ui.theme.* // Added import for theme colors
@@ -24,7 +25,16 @@ fun TimerSetupScreen(audioManager: AudioManager?, onStartClicked: (rounds: Int) 
         verticalArrangement = Arrangement.Center
     ) {
         Text("Kettlebell Timer", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(16.dp)) // Reduced spacer
+
+        Text(
+            text = "Each round consists of 8 exercises (30s each), followed by a 60s rest.",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center, // Center align the text
+            modifier = Modifier.padding(horizontal = 16.dp) // Add some horizontal padding
+        )
         Spacer(modifier = Modifier.height(32.dp))
+
 
         Text("How many rounds would you like to do?", style = MaterialTheme.typography.labelMedium)
         Spacer(modifier = Modifier.height(10.dp))
